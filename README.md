@@ -27,4 +27,17 @@ This is research in progress. The software  in this repo is under development an
 
 If you use any of the ideas or code from this repo in your own research, please cite it as _LSST DESC, in preparation_ and provide a link to this repo: https://github.com/LSSTDESC/derp
 
+## Contributing
 
+To help develop `derp`, you'll need a clone of this repo in your `$HOME/desc` folder at NERSC:
+```bash
+cd ~/desc
+git clone git@github.com:LSSTDESC/derp.git
+```
+Then, in your notebooks you'll need to insert this to your python path as you need it, like this:
+```python
+import os, sys
+derp_dir = os.environ['HOME']+'/desc/derp'
+sys.path.insert(0, derp_dir)
+```
+To push to a branch on the base repo you'll need Write access: contact @drphilmarshall about this. Alternatively, feel free to fork the repo and submit PRs from afar.
