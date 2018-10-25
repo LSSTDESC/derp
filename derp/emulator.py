@@ -9,26 +9,42 @@ import FoFCatalogMatching
 
 class Emulator(object):
     """
-    Worker object, that can construct a training set from an input truth catalog
-    matched to an output DRP Object catalog, use it to train a generative model, 
-    and then use that trained model to predict a new, "emulated" DRP catalog 
-    given a further input truth catalog.
+    Worker object, that can construct a training set from an input truth
+    catalog matched to an output DRP Object catalog, use it to train a 
+    generative model, and then use that trained model to predict a new, 
+    "emulated" DRP catalog given a further input truth catalog.
     """
     def __init__(self):
+        # Initialize attributes:
+        self.X = None
+        self.y = None
+        self.Nts = None
         return
     
-    def make_training_set(self, truth=None, observed=None, region=None, 
-                          true_quantities=None, observed_quantities=None):
+    def __repr__(self):
+        """Returns representation of the emulator object"""
+        s = "derp.Emulator"
+        if self.Nts is not None:
+            s += ", containing {}-object training set".format(self.Nts)
+            s += " to support prediction of {} DRP object attributes".format(self.X.shape[1])
+            s += " given {} input (true) object attributes.".format(self.y.shape[1])
+        return s
+    
+    def make_training_set(self, truth=None, 
+                          observed=None, 
+                          region=None, 
+                          true_quantities=None, 
+                          observed_quantities=None):
         """
-        Construct a design matrix ``X`` and array of response variables ``y`` from
-        a given truth catalog and DRP Object table.
+        Construct a design matrix ``X`` and array of response variables
+        ``y`` from a given truth catalog and DRP Object table.
         
         Parameters
         ----------
         truth: str
-            Name of the truth catalog (that GCR is expecting)
+            Name of the truth catalog (for GCR)
         observed: str
-            Name of the observed DRP object catalog (that GCR is expecting)
+            Name of the observed DRP object catalog (for GCR)
         region: tuple, float
             RA, DEC, radius of sky region to use objects from
         true_quantities: list, str
@@ -39,9 +55,9 @@ class Emulator(object):
         Returns
         -------
         X: :py:obj:`pandas.Dataframe`
-            Design matrix: true properties of one-to-one matched objects
+            Design matrix, true properties of one-to-one matched objects
         y: :py:obj:`pandas.Dataframe`
-            Response variables: observed properties of one-to-one matched objects
+            Response variables, observed properties of one-to-one matches
         """
         # Set up filters:
         center_ra, center_dec, radius = region
@@ -86,10 +102,12 @@ class Emulator(object):
                                                        (n_observed == 1)))
         truth_idx = results['row_index'][one_to_one_group_mask & truth_mask]
         observed_idx = results['row_index'][one_to_one_group_mask & observed_mask]
-        X = pd.DataFrame(true_objects).iloc[truth_idx].reset_index(drop=True)
-        y = pd.DataFrame(observed_objects).iloc[observed_idx].reset_index(drop=True)
+        self.X = pd.DataFrame(true_objects).iloc[truth_idx].reset_index(drop=True)
+        self.y = pd.DataFrame(observed_objects).iloc[observed_idx].reset_index(drop=True)
         
-        return X, y
+        self.Nts = self.X.shape[0]
+        
+        return self.X, self.y
 
     
 def setup_filter_on_healpix(region):
