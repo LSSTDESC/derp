@@ -12,6 +12,10 @@ What makes `derp` so simple?
 * The code only runs at NERSC, where the DC2 data live. We are targeting the DC2 Run 1.1p Truth table and DRP Object table.
 * We plan a naive application of a generative machine learning model, to map N truth properties to M observed properties.
 
+## Progress
+
+See the [notebooks](notebooks/README.rst) folder for demos and tutorials, and browse the code in [`derp/emulator.py`](https://github.com/LSSTDESC/derp/blob/master/derp/emulator.py).
+
 ## Sources
 
 This project builds on:
