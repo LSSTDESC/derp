@@ -19,7 +19,7 @@ See the index table below for links to the notebook code, and an auto-rendered v
      - Construct a training set from the DC2 Run 1.1p truth and DRP Object tables.
      - `ipynb <dc2_run1.1p_data.ipynb>`_, `rendered <https://nbviewer.jupyter.org/github/LSSTDESC/derp/blob/rendered/notebooks/dc2_run1.1p_data.ipynb>`_
 
-       .. image:: https://github.com/LSSTDESC/DC2-analysis/blob/rendered/tutorials/log/dc2_run1.1p_data.svg
-          :target: https://github.com/LSSTDESC/DC2-analysis/blob/rendered/tutorials/log/dc2_run1.1p_data.log
+       .. image:: https://github.com/LSSTDESC/derp/blob/rendered/tutorials/log/dc2_run1.1p_data.svg
+          :target: https://github.com/LSSTDESC/derp/blob/rendered/tutorials/log/dc2_run1.1p_data.log
 
      - `Phil Marshall <https://github.com/LSSTDESC/derp/issues/new?body=@drphilmarshall>`_
