@@ -1,11 +1,16 @@
+# ===============================================================================
 """
 The ``derp`` :py:class:`Emulator` is the main class in the ``derp`` package.
 """
+# ===============================================================================
+
 import healpy
 import numpy as np
 import pandas as pd
 import GCRCatalogs
 import FoFCatalogMatching
+
+# ===============================================================================
 
 class Emulator(object):
     """
@@ -19,6 +24,12 @@ class Emulator(object):
         self.X = None
         self.y = None
         self.Nts = None
+        self.X_IDs = None
+        self.y_IDs = None
+        self.X_mask = None
+        self.y_mask = None
+        # NaNs will be replaced by the following magic number: 
+        self.MAGIC = 9999 
         return
     
     def __repr__(self):
@@ -58,7 +69,7 @@ class Emulator(object):
             Design matrix, true properties of one-to-one matched objects
         y: :py:obj:`pandas.Dataframe`
             Response variables, observed properties of one-to-one matches
-        """
+        """        
         # Set up filters:
         center_ra, center_dec, radius = region
         ra_min, ra_max = center_ra - radius, center_ra + radius
@@ -107,9 +118,42 @@ class Emulator(object):
         
         self.Nts = self.X.shape[0]
         
+        # Do some pre-processing to remove NaNs, drop the IDs, and produce the 
+        # final X and y arrays to be stored in the class.
+        
+        self._preprocess_for_training()
+        
         return self.X, self.y
 
+    def _preprocess_for_training(self):
+        """
+        Internal helper function to clean up the training set.
+        """
+        # Find the object ID name:
+        X_ID_candidates, y_ID_candidates = [], []
+        for sub in ['bject']:
+            X_ID_candidates.append([s for s in self.X.columns.values if sub in s])
+            y_ID_candidates.append([s for s in self.y.columns.values if sub in s])
+        # Take the first option (fragile)...
+        X_ID_name = X_ID_candidates[0][0] 
+        y_ID_name = y_ID_candidates[0][0]
+                
+        # Save the ID values in separate column dataframes, and remove them:
+        self.X_IDs = self.X[[X_ID_name]]
+        self.y_IDs = self.y[[y_ID_name]]
+        self.X.drop([X_ID_name], axis=1, inplace=True)
+        self.y.drop([y_ID_name], axis=1, inplace=True)
+        
+        # Set NaNs to the magic numerical value and keep masks of them:
+        self.X_mask = pd.isnull(self.X).values
+        self.y_mask = pd.isnull(self.y).values
+        self.X.fillna(self.MAGIC, inplace=True)
+        self.y.fillna(self.MAGIC, inplace=True)
+        
+        return
     
+# ===============================================================================
+
 def setup_filter_on_healpix(region):
     """
     Return a list of healpix ids overlapping the given sky region
@@ -136,3 +180,5 @@ def setup_filter_on_healpix(region):
 
 def filter_on_healpix(hp, list_of_healpix):
     return np.array([hh in list_of_healpix for hh in hp])
+
+# ===============================================================================
