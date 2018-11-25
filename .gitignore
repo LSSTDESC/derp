@@ -1,3 +1,12 @@
+# Data
+*.csv
+*.txt
+*.npy
+
+# Temp
+*~
+*#
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
